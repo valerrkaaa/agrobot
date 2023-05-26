@@ -4,4 +4,4 @@ import tokens
 
 bot = aiogram.Bot(token=tokens.tg_bot_token)
 dp = aiogram.Dispatcher(bot, storage=MemoryStorage())
-user_ids = []
+chat_id_list = []
