@@ -1,11 +1,5 @@
 from aiogram import types
 from bot import chat_id_list
-from bot import dp
-
-
-def register_handlers():
-    dp.register_message_handler(start, commands=['start'])
-    dp.register_message_handler(stop, commands=['stop'])
 
 
 async def start(message: types.Message):
