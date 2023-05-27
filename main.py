@@ -7,6 +7,8 @@ def main():
     # запуск бот хэндлеров
     register_handlers.register_handlers()
 
+    print('bot started')
+
     # запуск бота
     executor.start_polling(dp)
 
