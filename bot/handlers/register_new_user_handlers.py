@@ -1,13 +1,43 @@
+from aiogram.dispatcher import FSMContext
+from api import apl_requests
 from aiogram import types
-from bot import chat_id_list
+from bot import states
+from bot import bot
 
 
-async def start(message: types.Message):
-    if message.chat.id not in chat_id_list:
-        chat_id_list.append(message.from_user.id)
-    await message.answer('Вы успешно подписались на рассылку!\nДля того, чтобы отписаться, введите: /stop')
+async def start(message: types.Message, state: FSMContext):
+    await message.answer('Добро пожаловать!\n'
+                         'Для того, чтобы пользоваться нашим ботом, необходимо иметь '
+                         'учётную запись на сайте .https://team-units.vercel.app и пройти регистрацию в этом боте')
+    await set_email_state(message, state)
 
 
-async def stop(message: types.Message):
-    chat_id_list.remove(message.chat.id)
-    await message.answer('Вы успешно отписались от рассылки!\nДля того, чтобы снова подписаться, введите: /start')
+async def set_email_state(message: types.Message, state: FSMContext):
+    await message.answer('Введите Вашу почту:')
+    await state.set_state(states.Register.wait_email)
+
+
+async def validate_email(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['email'] = message.text.strip()
+
+    await set_password_state(message, state)
+
+
+async def set_password_state(message: types.Message, state: FSMContext):
+    await message.answer('Введите Ваш пароль:\n'
+                         '(сообщение будет удалено после авторизации)')
+    await state.set_state(states.Register.wait_password)
+
+
+async def validate_password(message: types.Message, state: FSMContext):
+    await bot.delete_message(message.chat.id, message.message_id)
+
+    async with state.proxy() as data:
+        email = data.get('email')
+
+    apl_requests.login(email, message.text.strip())
+
+
+async def cancel_on_registration(message: types.Message):
+    await message.answer('Регистрация отменена, для повторной регистрации введите /register')
