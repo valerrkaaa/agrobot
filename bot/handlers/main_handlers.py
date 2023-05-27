@@ -1,4 +1,3 @@
-from bot.handlers import register_new_user_handlers
 from aiogram.dispatcher import FSMContext
 from aiogram import types
 from bot import keyboards
@@ -15,6 +14,7 @@ async def show_product_cart(message: types.Message, state: FSMContext):
 
     if str(response.get('success', '')) == '1':
         for item in response['data']['items']:
+            keyboard = keyboards.generate_cart_keyboard({})
             if item['product']['description']:
                 description = '\nОписание:\n' + item['product']['description'] + '\n'
             else:
@@ -23,9 +23,9 @@ async def show_product_cart(message: types.Message, state: FSMContext):
             # await bot.send_photo(chat_id=message.chat.id, photo=photo)
             # await message.answer(f"{item['product']['name']}\n{description}\n"
             #                      f"Цена: {item['product']['price']}")
-            
             await bot.send_photo(chat_id=message.chat.id, photo=photo,
-                                 caption=f"{item['product']['name']}\n{description}\nЦена: {item['product']['price']}")
+                                 caption=f"{item['product']['name']}\n{description}\nЦена: {item['product']['price']}",
+                                 reply_markup=keyboard)
             # TODO inline написать фермеру (item['product']['farmer_id'])
     else:
         await message.answer('Во время запроса произошла ошибка :(')
