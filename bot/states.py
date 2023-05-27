@@ -8,3 +8,10 @@ class Register(StatesGroup):
 
 class Main(StatesGroup):
     default_state = State()
+
+
+class NewProduct(StatesGroup):
+    wait_product_name = State()
+    wait_description = State()
+    wait_image = State()
+    wait_price = State()
