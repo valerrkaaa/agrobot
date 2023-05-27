@@ -7,7 +7,10 @@ port = ''
 def login(email, password) -> dict:
     params = {'email': email, 'password': password}
     result = requests.post(f'http://{host}{port}/login', json=params)
-    return result.json()
+    if result.ok:
+        return result.json()
+    else:
+        return {'error': result.reason}
 
 
 def get_product_card(jwt) -> dict:
